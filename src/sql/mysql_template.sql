@@ -15,7 +15,7 @@ CREATE TABLE jobs (
     job_name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE deparments (
+CREATE TABLE departments (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     deparment_name VARCHAR(100) NOT NULL
 );
