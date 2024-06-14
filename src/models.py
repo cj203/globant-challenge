@@ -53,7 +53,7 @@ class Jobs(Base):
 
 def departments_bulk_execute(n, session, entity):
     try:
-        print(entity)
+        print(entity, n[:5])
         if entity == "departments":
             print("departments")
             session.execute(
@@ -87,7 +87,8 @@ def _hired_employees_list_create(data):
                     "department_id": int(data[i][3]),
                     "job_id": int(data[i][4]),
                 }
-                for i in range(len(data)) if data[i][1] and data[i][2] and data[i][4]
+                for i in range(len(data))
+                if data[i][1] and data[i][2] and data[i][3] and data[i][4]
             ]
 
 def _deparments_list_create(data):
