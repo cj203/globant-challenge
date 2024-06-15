@@ -35,7 +35,8 @@ def process_file(file, entity):
             departments_bulk_execute(sender_bulk[r:r+1000], db_session, entity)
     else:
         departments_bulk_execute(sender_bulk, db_session, entity)
-    pass
+    return Response("Successfull", status=200)
+    
 
 @app.route('/file/v1/<entity>', methods=['POST'])
 def upload_file(entity):
