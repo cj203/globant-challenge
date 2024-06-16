@@ -4,6 +4,7 @@ from sqlalchemy import insert
 from sqlalchemy.exc import IntegrityError
 from flask import Response
 from dateutil import parser 
+from sqlalchemy.sql import text
 
 Base = declarative_base()
 
@@ -51,9 +52,8 @@ class Jobs(Base):
         return f'<job_name {self.job_name!r}>'
 
 
-def departments_bulk_execute(n, session, entity):
+def bulk_process(n, session, entity):
     try:
-        print(entity, n[:5])
         if entity == "departments":
             print("departments")
             session.execute(
@@ -108,3 +108,31 @@ def _jobs_list_create(data):
                 }
                 for i in range(len(data))
             ]
+
+def hired_employees(session):
+    query = text("""
+        select d.id, d.department_name, hired from
+        (
+            SELECT AVG(dd.hired) as median_val
+            FROM (
+            select department_id, COUNT(*) hired, @rownum:=@rownum+1 as `row_number`, @total_rows:=@rownum 
+            from globant_challenge.hired_employees, (SELECT @rownum:=0) r
+            where year(hire_datetime) = 2021
+            group by department_id
+            ORDER BY hired
+            ) as dd
+            WHERE dd.row_number IN ( FLOOR((@total_rows+1)/2), FLOOR((@total_rows+2)/2) )
+        ) temp, (
+            select department_id, COUNT(*) hired
+            from globant_challenge.hired_employees e
+            where year(hire_datetime) = 2021
+            group by department_id
+        ) as temp2
+        inner join globant_challenge.departments as d on temp2.department_id = d.id
+        where temp2.hired > temp.median_val
+        order by temp2.hired DESC;""")
+    return session.execute(query).all()
+
+def hired_by_quarter(session):
+    query = text("""Select * from globant_challenge.view_quarters limit 300""")
+    return session.execute(query).all()

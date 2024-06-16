@@ -1,4 +1,4 @@
-CREATE VIEW view_quarters AS
+CREATE VIEW globant_challenge.view_quarters AS
 select d.department_name, j.job_name, COUNT(Q1) as Q1, COUNT(Q2)as Q2, COUNT(Q3) as Q3, COUNT(Q4) as Q4 from (
 SELECT department_id, job_id, MONTH(hire_datetime) as Q1, null as Q2, null as Q3, null as Q4  FROM globant_challenge.hired_employees
 where MONTH(hire_datetime) BETWEEN 1 and 3 and year(hire_datetime) = 2021

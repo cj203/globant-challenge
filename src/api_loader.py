@@ -1,9 +1,9 @@
 import csv
 import io
 import flask
-from flask import request
+from flask import request, render_template
 from database import db_session
-from models import departments_bulk_execute
+from models import bulk_process, hired_employees, hired_by_quarter
 from flask import Response
 
 
@@ -19,7 +19,17 @@ def allowed_file(filename):
 
 @app.route('/', methods=['GET'])
 def home():
- return '''<h1>Home</h1>'''
+    return render_template("menu.html")
+
+@app.route('/dasboard/hired_employees', methods=['GET'])
+def hired_employees_api():
+    data = hired_employees(db_session)
+    return render_template("hired_employees.html", data=data)
+
+@app.route('/dasboard/hired_by_quarter', methods=['GET'])
+def hired_by_quarter_api():
+    data = hired_by_quarter(db_session)
+    return render_template("hired_by_quarter.html", data=data)
 
 def process_file(file, entity):
     reader_list = csv.reader(io.StringIO(file.read().decode("utf-8")), delimiter=',')
@@ -32,9 +42,9 @@ def process_file(file, entity):
     
     if len(sender_bulk) > 1000:
         for r in range(0, len(sender_bulk), 1000):
-            departments_bulk_execute(sender_bulk[r:r+1000], db_session, entity)
+            bulk_process(sender_bulk[r:r+1000], db_session, entity)
     else:
-        departments_bulk_execute(sender_bulk, db_session, entity)
+        bulk_process(sender_bulk, db_session, entity)
     return Response("Successfull", status=200)
     
 
@@ -68,14 +78,7 @@ def deparments_bulk_insert(entity):
     elif type(request_data) != list:
         return Response("Bad request, data must be a list", status=400)
 
-    return departments_bulk_execute(request_data, db_session, entity)
+    return bulk_process(request_data, db_session, entity)
 
 
 app.run()
-
-
-
-
-
-
-# print(db_session.query(Jobs).all())
