@@ -42,10 +42,10 @@ def process_file(file, entity):
     
     if len(sender_bulk) > 1000:
         for r in range(0, len(sender_bulk), 1000):
-            bulk_process(sender_bulk[r:r+1000], db_session, entity)
+            result = bulk_process(sender_bulk[r:r+1000], db_session, entity)
     else:
-        bulk_process(sender_bulk, db_session, entity)
-    return Response("Successfull", status=200)
+        result = bulk_process(sender_bulk, db_session, entity)
+    return result
     
 
 @app.route('/file/v1/<entity>', methods=['POST'])
@@ -60,9 +60,7 @@ def upload_file(entity):
             return Response('No selected file', status=404)
     
         if file and allowed_file(file.filename):
-            process_file(file, entity)
-            
-            return Response("Fino", status=200)
+            return process_file(file, entity)
     return Response("Bad request", status=404)
 
 @app.route('/<entity>/v1/bulk', methods=['POST'])

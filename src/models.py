@@ -32,11 +32,11 @@ class HiredEmployees(Base):
 class Departments(Base):
     __tablename__ = "departments"
     id = Column(Integer(), primary_key=True)
-    deparment_name = Column(String(100), nullable=False)
+    department_name = Column(String(100), nullable=False)
 
-    def __init__(self, id=None, deparment_name=None):
+    def __init__(self, id=None, department_name=None):
         self.id = id
-        self.deparment_name = deparment_name
+        self.department_name = department_name
     
 
 class Jobs(Base):
@@ -55,7 +55,6 @@ class Jobs(Base):
 def bulk_process(n, session, entity):
     try:
         if entity == "departments":
-            print("departments")
             session.execute(
                 insert(Departments),
                 _deparments_list_create(n),
@@ -95,7 +94,7 @@ def _deparments_list_create(data):
     return [
                 {
                     "id": int(data[i][0]),
-                    "deparment_name": data[i][1],
+                    "department_name": data[i][1],
                 }
                 for i in range(len(data))
             ]
